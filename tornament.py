@@ -5,9 +5,8 @@ def utility(state):
    if num_in_a_row(4, state, "yellow") > 0:
        return -10000
 
-def evaluation(state, row, col):
-  return score(state, "red") - score(state, "yellow")
-"""
+def evaluation(state,player, row, col):
+  return score2(state, player, row, col)
 def score2(state, player, row, col):
     score = 0
     start_row = row - min(row, col)
@@ -18,6 +17,8 @@ def score2(state, player, row, col):
             consecitive += 1
             if consecitive > 1:
                 score += 10**consecitive
+            if consecitive == 4:
+                return 10000
         else:
             consecitive = 0
         start_col += 1
@@ -31,6 +32,8 @@ def score2(state, player, row, col):
             consecitive += 1
             if consecitive > 1:
                 score += 10**consecitive
+            if consecitive == 4:
+                return 10000
         else:
             consecitive = 0
         start_col += 1
@@ -41,6 +44,8 @@ def score2(state, player, row, col):
             consecitive += 1
             if consecitive > 1:
                 score += 10**consecitive
+            if consecitive == 4:
+                return 10000
         else:
             consecitive = 0
 
@@ -49,11 +54,12 @@ def score2(state, player, row, col):
             consecitive += 1
             if consecitive > 1:
                 score += 10**consecitive
+            if consecitive == 4:
+                return 10000
         else:
             consecitive = 0
 
     return score
-"""
 def score(state, player):
   three_in_a_row = num_in_a_row(3, state, player) 
   two_in_a_row = num_in_a_row(2, state, player) - 2 * three_in_a_row 
@@ -115,7 +121,7 @@ def connect_four(contents, turn):
         scores = []
         score = 0
         if depth == 0:
-            return evaluation(state, row, col)
+            return evaluation(state, player, row, col)
         
         col = 3
         #check if the column is playable
@@ -182,8 +188,8 @@ def connect_four(contents, turn):
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         # You can modify these values to test your code
-        board = '.......,.......,.......,.......,.......,.......'
-        #board = '.ryyrry,.rryry.,..y.r..,..y....,.......,.......'
+        #board = '.......,.......,.......,.......,.......,.......'
+        board = '.ryyrry,.rryry.,..y.r..,..y....,.......,.......'
         player = 'red'
     else:
         board = sys.argv[1]
