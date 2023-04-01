@@ -102,7 +102,7 @@ def connect_four(contents, turn):
         "yellow" : min
     }
     order = [3, 4, 2, 5, 1, 6, 0]
-    max_depth = 7
+    max_depth = 6
     alpha = -2**63
     beta = 2**63
     depth = max_depth
@@ -130,13 +130,16 @@ def connect_four(contents, turn):
                 new_state = state.copy()
                 new_state[row] = new_state[row][:col] + player[0] + new_state[row][col+1:]
                 #print(new_state)
-                score = -minimax(new_state, next_player, depth - 1, -alpha, -beta, row, col)
+                score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
+                scores.append(score)
                 break
             
+        if player == "red":
+            alpha = max(score, alpha)
+        if player == "yellow":
+            beta = min(score, beta)
         if alpha >= beta:
             return score
-        if score > alpha:
-            alpha = score
         
         for increment in range(1,4):
             col = 3 + increment
@@ -146,14 +149,16 @@ def connect_four(contents, turn):
                     new_state = state.copy()
                     new_state[row] = new_state[row][:col] + player[0] + new_state[row][col+1:]
                     #print(new_state)
-                    score = -minimax(new_state, next_player, depth - 1, -alpha, -beta, row, col)
+                    score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
                     scores.append(score)
                     break
                 
+            if player == "red":
+                alpha = max(score, alpha)
+            if player == "yellow":
+                beta = min(score, beta)
             if alpha >= beta:
                 return score
-            if score > alpha:
-                alpha = score
             
             col = 3 - increment
             #check if the column is playable
@@ -162,26 +167,30 @@ def connect_four(contents, turn):
                     new_state = state.copy()
                     new_state[row] = new_state[row][:col] + player[0] + new_state[row][col+1:]
                     #print(new_state)
-                    score = -minimax(new_state, next_player, depth - 1, -alpha, -beta, row, col)
+                    score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
                     scores.append(score)
                     break
                 
+            if player == "red":
+                alpha = max(score, alpha)
+            if player == "yellow":
+                beta = min(score, beta)
             if alpha >= beta:
                 return score
-            if score > alpha:
-                alpha = score
                  
+        best_score = dict[player](scores)
         if depth == max_depth:
-            play_col = order[scores.index(max(scores))]
-        return alpha
+            play_col = order[scores.index(best_score)]
+        return best_score
     minimax(state, turn, depth, alpha, beta, 0, 0)
     return f'{play_col}\n{node_count}'
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         # You can modify these values to test your code
-        board = '.......,.......,.......,.......,.......,.......'
+        #board = '.......,.......,.......,.......,.......,.......'
         #board = '.ryyrry,.rryry.,..y.r..,..y....,.......,.......'
+        board = '..yr...,..yr...,..yr...,...y...,...r...,.......'
         player = 'red'
     else:
         board = sys.argv[1]
