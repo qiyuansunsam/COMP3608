@@ -5,9 +5,55 @@ def utility(state):
    if num_in_a_row(4, state, "yellow") > 0:
        return -10000
 
-def evaluation(state):
+def evaluation(state, row, col):
   return score(state, "red") - score(state, "yellow")
+"""
+def score2(state, player, row, col):
+    score = 0
+    start_row = row - min(row, col)
+    start_col = col - min(row, col)
+    consecitive = 0
+    while start_row < 6 and start_col < 7:
+        if state[start_row][start_col] == player[0]:
+            consecitive += 1
+            if consecitive > 1:
+                score += 10**consecitive
+        else:
+            consecitive = 0
+        start_col += 1
+        start_row += 1
 
+    start_row = row + min(5 - row, col)
+    start_col = col - min(5 - row, col)
+    consecitive = 0
+    while start_row >= 0 and start_col < 7:
+        if state[start_row][start_col] == player[0]:
+            consecitive += 1
+            if consecitive > 1:
+                score += 10**consecitive
+        else:
+            consecitive = 0
+        start_col += 1
+        start_row -= 1
+    
+    for i in range(7):
+        if state[row][i] == player[0]:
+            consecitive += 1
+            if consecitive > 1:
+                score += 10**consecitive
+        else:
+            consecitive = 0
+
+    for i in range(6):
+        if state[i][col] == player[0]:
+            consecitive += 1
+            if consecitive > 1:
+                score += 10**consecitive
+        else:
+            consecitive = 0
+
+    return score
+"""
 def score(state, player):
   three_in_a_row = num_in_a_row(3, state, player) 
   two_in_a_row = num_in_a_row(2, state, player) - 2 * three_in_a_row 
@@ -57,19 +103,19 @@ def connect_four(contents, turn):
     node_count = 0
     play_col = 0
     state = contents.split(",")
-    def minimax(state, player, depth, alpha, beta):
+    def minimax(state, player, depth, alpha, beta, row, col):
         nonlocal node_count, play_col
-        node_count += 1 
     
         terminal_test = utility(state)
         if terminal_test:
             return terminal_test
+        node_count += 1 
         
         next_player = "red" if player == "yellow" else "yellow"
         scores = []
         score = 0
         if depth == 0:
-            return evaluation(state)
+            return evaluation(state, row, col)
         
         col = 3
         #check if the column is playable
@@ -78,7 +124,7 @@ def connect_four(contents, turn):
                 new_state = state.copy()
                 new_state[row] = new_state[row][:col] + player[0] + new_state[row][col+1:]
                 #print(new_state)
-                score = minimax(new_state, next_player, depth - 1, alpha, beta)
+                score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
                 scores.append(score)
                 break
             
@@ -97,7 +143,7 @@ def connect_four(contents, turn):
                     new_state = state.copy()
                     new_state[row] = new_state[row][:col] + player[0] + new_state[row][col+1:]
                     #print(new_state)
-                    score = minimax(new_state, next_player, depth - 1, alpha, beta)
+                    score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
                     scores.append(score)
                     break
                 
@@ -115,7 +161,7 @@ def connect_four(contents, turn):
                     new_state = state.copy()
                     new_state[row] = new_state[row][:col] + player[0] + new_state[row][col+1:]
                     #print(new_state)
-                    score = minimax(new_state, next_player, depth - 1, alpha, beta)
+                    score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
                     scores.append(score)
                     break
                 
@@ -130,7 +176,7 @@ def connect_four(contents, turn):
         if depth == max_depth:
             play_col = order[scores.index(best_score)]
         return best_score
-    minimax(state, turn, depth, alpha, beta)
+    minimax(state, turn, depth, alpha, beta, 0, 0)
     return f'{play_col}\n{node_count}'
 
 if __name__ == '__main__':
