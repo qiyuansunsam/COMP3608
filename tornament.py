@@ -1,50 +1,3 @@
-#no use for now
-"""
-def utility(state):
-   if num_in_a_row(4, state, "red") > 0 :
-       return 10000
-   if num_in_a_row(4, state, "yellow") > 0:
-       return -10000
-    
-def evaluation(state,player, row, col):
-  return score(state, player)  -score(state, player)   
-    
-def score(state, player):
-  three_in_a_row = num_in_a_row(3, state, player) 
-  two_in_a_row = num_in_a_row(2, state, player) - 2 * three_in_a_row 
-  return state.count(player[0]) + \
-      10 * two_in_a_row + \
-      100 * three_in_a_row
-   
-def num_in_a_row(count, state, player):
-    p = player[0]
-    num_rows = len(state)
-    num_cols = len(state[0])
-    num = 0
-    
-    # Check rows for consecutive pieces
-    for row in range(num_rows):
-        for col in range(num_cols - count + 1):
-            if state[row][col:col+count] == p*count:
-                num += 1
-    
-    # Check columns for consecutive pieces
-    for col in range(num_cols):
-        for row in range(num_rows - count + 1):
-            if [state[row + i][col] for i in range(count)] == [p]*count:
-                num += 1
-    
-    # Check diagonals for consecutive pieces
-    for row in range(num_rows - count + 1):
-        for col in range(num_cols - count + 1):
-            if [state[row+i][col+i] for i in range(count)] == [p]*count:
-                num += 1
-            if [state[row+i][col+count-i-1] for i in range(count)] == [p]*count:
-                num += 1
-    
-    return num
-"""
-
 import time, sys
 
 evaluation_cache = {}
@@ -105,9 +58,10 @@ def connect_four(contents, turn):
     node_count = 0
     play_col = 0
     state = contents.split(",")
-
+    if state[3][3] == ".":
+        return 3
     def minimax(state, player, depth, alpha, beta, row, col):
-        nonlocal node_count, play_col
+        nonlocal play_col
     
         next_player = "red" if player == "yellow" else "yellow"
 
@@ -116,7 +70,6 @@ def connect_four(contents, turn):
             return terminal_test
         
         
-        node_count += 1 
         scores = []
         score = 0
         if depth == 0:
@@ -147,14 +100,14 @@ def connect_four(contents, turn):
         return best_score
     minimax(state, turn, depth, alpha, beta, 0, 0)
     #print(score2('...rrrr,.......,.......,.......,.......,.......'.split(","), "red", 0, 6))
-    return f'{play_col}\n{node_count}'
+    return play_col
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         # You can modify these values to test your code
         #board = '.......,.......,.......,.......,.......,.......'
-        board = '.ryyrry,.rryry.,..y.r..,..y....,.......,.......'
-        #board = '..yr...,..yr...,...r...,...y...,.......,.......'
+        #board = '.ryyrry,.rryry.,..y.r..,..y....,.......,.......'
+        board = '..yr...,..yr...,...r...,...y...,.......,.......'
         player = 'red'
     else:
         board = sys.argv[1]
