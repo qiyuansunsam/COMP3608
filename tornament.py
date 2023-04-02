@@ -1,5 +1,4 @@
 import time, sys
-
 evaluation_cache = {}
 def evaluation(state, player, row, col):
     cache_key = (tuple(state), player, row, col)
@@ -18,7 +17,7 @@ def score2(state, player, row, col):
     consecutive = 0
     directions = [
         (1, 1, row - min(row, col), col - min(row, col)),
-        (1, -1, row + min(5 - row, col), col - min(5 - row, col)),
+        (-1, 1, row + min(5 - row, col), col - min(5 - row, col)),
         (0, 1, row, 0),
         (1, 0, 0, col),
     ]
@@ -28,7 +27,6 @@ def score2(state, player, row, col):
         r, c = r_start, c_start
         consecutive = 0
         while 0 <= r < 6 and 0 <= c < 7:
-            
             if state[r][c] == player[0]:
                 consecutive += 1
                 score, done = update_score(consecutive, score)
@@ -49,28 +47,34 @@ def connect_four(contents, turn):
         "yellow" : min
     }
     #order of going form middle
-    order = [3, 4, 2, 5, 1, 6, 0]
+    order = [3, 2, 4, 1, 5, 0, 6]
 
-    max_depth = 10
+    max_depth = 8
     alpha = -2**63
     beta = 2**63
     depth = max_depth
     node_count = 0
     play_col = 0
     state = contents.split(",")
+    next_player = "red" if player == "yellow" else "yellow"
     if state[3][3] == ".":
+        for col in range(7):
+            if state[3][col] == ".":
+                new_state = state.copy()
+                new_state[3] = new_state[3][:col] + next_player[0] + new_state[3][col+1:]
+                if evaluation(new_state, next_player, 3, col) == 10000:
+                    return col
         return 3
     def minimax(state, player, depth, alpha, beta, row, col):
         nonlocal play_col
-    
         next_player = "red" if player == "yellow" else "yellow"
 
         terminal_test = evaluation(state, next_player, row, col)
         if abs(terminal_test) == 10000:
             return terminal_test
         
-        
         scores = []
+        cols = []
         score = 0
         if depth == 0:
             return evaluation(state, player, row, col)
@@ -84,19 +88,22 @@ def connect_four(contents, turn):
                     #print(new_state)
                     score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
                     scores.append(score)
+                    cols.append(col)
                     break
-                
-            if player == "red":
+            if player == "red" and score:
                 alpha = max(score, alpha)
-            if player == "yellow":
+            if player == "yellow" and score:
                 beta = min(score, beta)
             if alpha >= beta:
                 return score
         
         #please do make better of determining the move, I cant think of any, those I tried bugged horribly...
-        best_score = dict[player](scores) if scores else 0
+        best_score = dict[player](scores)
         if depth == max_depth:
-            play_col = order[scores.index(best_score)]
+            index = scores.index(best_score)
+            while state[5][cols[index]] != "." and index < 7:
+                index += 1
+            play_col = cols[index]
         return best_score
     minimax(state, turn, depth, alpha, beta, 0, 0)
     #print(score2('...rrrr,.......,.......,.......,.......,.......'.split(","), "red", 0, 6))
@@ -106,8 +113,8 @@ if __name__ == '__main__':
     if len(sys.argv) <= 1:
         # You can modify these values to test your code
         #board = '.......,.......,.......,.......,.......,.......'
-        #board = '.ryyrry,.rryry.,..y.r..,..y....,.......,.......'
-        board = '..yr...,..yr...,...r...,...y...,.......,.......'
+        board = '.ryyrry,.rryry.,..yrrr.,..yyy..,.......,.......'
+        #board = 'r.ryr..,r.ryy..,r.ryr..,y.yry..,..ryr..,..yy...'
         player = 'red'
     else:
         board = sys.argv[1]
