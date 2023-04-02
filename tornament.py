@@ -56,15 +56,6 @@ def connect_four(contents, turn):
     node_count = 0
     play_col = 0
     state = contents.split(",")
-    next_player = "red" if player == "yellow" else "yellow"
-    if state[3][3] == ".":
-        for col in range(7):
-            if state[3][col] == ".":
-                new_state = state.copy()
-                new_state[3] = new_state[3][:col] + next_player[0] + new_state[3][col+1:]
-                if evaluation(new_state, next_player, 3, col) == 10000:
-                    return col
-        return 3
     def minimax(state, player, depth, alpha, beta, row, col):
         nonlocal play_col
         next_player = "red" if player == "yellow" else "yellow"
@@ -112,8 +103,8 @@ def connect_four(contents, turn):
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         # You can modify these values to test your code
-        #board = '.......,.......,.......,.......,.......,.......'
-        board = '.ryyrry,.rryry.,..yrrr.,..yyy..,.......,.......'
+        board = '...r...,...y...,.......,.......,.......,.......'
+        #board = '.ryyrry,.rryry.,..yrrr.,..yyy..,.......,.......'
         #board = 'r.ryr..,r.ryy..,r.ryr..,y.yry..,..ryr..,..yy...'
         player = 'red'
     else:
