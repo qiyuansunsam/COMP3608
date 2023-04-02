@@ -141,7 +141,7 @@ def connect_four(contents, turn):
                 return score
         
         #please do make better of determining the move, I cant think of any, those I tried bugged horribly...
-        best_score = dict[player](scores)
+        best_score = dict[player](scores) if scores else 0
         if depth == max_depth:
             play_col = order[scores.index(best_score)]
         return best_score
