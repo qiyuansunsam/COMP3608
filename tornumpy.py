@@ -1,12 +1,17 @@
 import time, sys, joblib
 import numpy as np
 
-memory = joblib.Memory(location='./cache', verbose=0)
+#memory = joblib.Memory(location='./cache', verbose=0)
 
 def evaluation(state, player, row, col):
-    return score2(state, player, row, col) if player == 1 else -score2(state, player, row, col)
+    
+    start = time.time()
+    score1 = score2(state, player, row, col) if player == 1 else -score2(state, player, row, col)
+    end = time.time()
+    print(end - start)
+    return score1
 
-cached_evaluation = memory.cache(evaluation)
+#cached_evaluation = memory.cache(evaluation)
 
 def score2(state, player, row, col):
     def update_score(consecutive, score):
@@ -51,7 +56,7 @@ def connect_four(contents, turn):
     #order of going form middle
     order = [3, 2, 4, 1, 5, 0, 6]
 
-    max_depth = 8
+    max_depth = 2
     alpha = -2**63
     beta = 2**63
     depth = max_depth
@@ -59,7 +64,7 @@ def connect_four(contents, turn):
     play_col = 0
     state = contents.split(",")
     turn = 1 if player == "red" else 2
-    
+
     def map_element(element):
         if element == '.':
             return 0
@@ -77,14 +82,16 @@ def connect_four(contents, turn):
 
     # Apply the mapping function to the input array
     state = vectorized_map(input_array)
+
+    node_count = 0
     def minimax(state, player, depth, alpha, beta, row, col):
-        nonlocal play_col
+        nonlocal play_col, node_count
         next_player = 1 if player == 2 else 2
 
         terminal_test = evaluation(state, next_player, row, col)
         if abs(terminal_test) == 10000:
             return terminal_test
-        
+        node_count += 1
         scores = []
         cols = []
         score = 0
@@ -95,14 +102,16 @@ def connect_four(contents, turn):
             #check if the column is playable
             for row in range(6):
                 if state[row][col] == 0:
+                    
                     new_state = state.copy()
-
                     new_state[row][col] = player
                     #print(new_state)
                     score = minimax(new_state, next_player, depth - 1, alpha, beta, row, col)
                     scores.append(score)
                     cols.append(col)
                     break
+            
+            
             if player == 1 and score:
                 alpha = max(score, alpha)
             if player == 2 and score:
@@ -120,6 +129,7 @@ def connect_four(contents, turn):
         return best_score
     minimax(state, turn, depth, alpha, beta, 0, 0)
     #print(score2('...rrrr,.......,.......,.......,.......,.......'.split(","), "red", 0, 6))
+    print(node_count)
     return play_col
 
 if __name__ == '__main__':

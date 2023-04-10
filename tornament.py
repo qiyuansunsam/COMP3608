@@ -1,4 +1,4 @@
-import time, sys
+import sys, time
 evaluation_cache = {}
 def evaluation(state, player, row, col):
     cache_key = (tuple(state), player, row, col)
@@ -49,7 +49,7 @@ def connect_four(contents, turn):
     #order of going form middle
     order = [3, 2, 4, 1, 5, 0, 6]
 
-    max_depth = 8
+    max_depth = 7
     alpha = -2**63
     beta = 2**63
     depth = max_depth
@@ -103,8 +103,8 @@ def connect_four(contents, turn):
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         # You can modify these values to test your code
-        board = '...r...,...y...,.......,.......,.......,.......'
-        #board = '.ryyrry,.rryry.,..yrrr.,..yyy..,.......,.......'
+        #board = '...r...,...y...,.......,.......,.......,.......'
+        board = '.ryyrry,.rryry.,..yrrr.,..yyy..,.......,.......'
         #board = 'r.ryr..,r.ryy..,r.ryr..,y.yry..,..ryr..,..yy...'
         player = 'red'
     else:

@@ -1,3 +1,4 @@
+import time
 def utility(state):
    if num_in_a_row(4, state, "red") > 0 :
        return 10000
@@ -81,7 +82,7 @@ def connect_four_ab(contents, turn, max_depth):
                     scores.append(score)
                     break
                 
-            best_score = dict[player](scores)
+            best_score = dict[player](scores) if scores else 0
             if player == "red":
                 alpha = max(score, alpha)
             if player == "yellow":
@@ -89,11 +90,15 @@ def connect_four_ab(contents, turn, max_depth):
             if alpha >= beta:
                 return score
         if depth == max_depth:
-            play_col = scores.index(best_score)
+            order = range(7)
+            index = scores.index(best_score)
+            while state[5][order[index]] != "." and index < 7:
+                index += 1
+            play_col = order[index]
         return best_score
     minimax(state, turn, depth, alpha, beta)
     return f'{play_col}\n{node_count}'
 
 if __name__ == '__main__':
     # Example function call below, you can add your own to test the connect_four_mm function
-    print(connect_four_ab(".ryyrry,.rryry.,..y.r..,..y....,.......,.......", "red", 4))
+    print(connect_four_ab('r.ryr..,r.ryy..,r.ryr..,y.yry..,y.ryr..,..yy...', "red", 6))
