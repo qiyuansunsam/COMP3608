@@ -26,12 +26,10 @@ def summarize(data):
 def f_x(summaries, input, prob_yes, prob_no):
     probabilities = {}
     probabilities['yes'] = prob_yes
-    print(summaries)
     for i in range(8):
         mean, stdev = summaries['yes'][i]
         probabilities['yes'] *= math.exp(-(math.pow(input[i] - mean, 2) / (2 * math.pow(stdev, 2)))) / (math.sqrt(2 * math.pi) * stdev)
     probabilities['no'] = prob_no
-    print(summaries)
     for i in range(8):
         mean, stdev = summaries['no'][i]
         probabilities['no'] *= math.exp(-(math.pow(input[i] - mean, 2) / (2 * math.pow(stdev, 2)))) / (math.sqrt(2 * math.pi) * stdev)
