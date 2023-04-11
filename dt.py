@@ -35,7 +35,7 @@ class TreeNode:
         best_attribute = 0
         for attribute in range(len(data[0])):
             gain = self.info_gain(data, clas, attribute)
-            if gain > best_gain:
+            if gain >= best_gain:
                 best_gain = gain
                 best_attribute = attribute
         return best_attribute
